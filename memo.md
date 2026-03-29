@@ -63,3 +63,33 @@ jcmd <pid> GC.heap_dump /tmp/heap.hprof
 取得したheap dumpはInteliJのProfilerなどで調査可能
 - https://pleiades.io/help/idea/create-a-memory-snapshot.html
 - https://pleiades.io/help/idea/read-the-memory-snapshot.html#productivity-tips
+
+ヒープダンプ全体+クラスごとの調査とインスタンスごとに調査できる。
+- ヒープダンプ全体の調査
+  - GC root
+    - GCで参照のグラフを辿る際のrootとなるobject
+      - 実行中のstackで生きているローカル変数
+        - この時はMerged Pathが特定のクラスになる
+      - thread object
+      - クラスにより参照されているstatic変数
+        - この時はMerged Pathが `jdk.internal.loader.Classloader$AppClassLoader`になる（はず）
+    - `逆に言えばここまでしか辿れない`
+      - どのメソッドで追加されているか などは特定後に調査する必要がある
+  - Merged Path
+    - そのクラスのインスタンスがどのクラスのインスタンスから参照されているか
+- インスタンスごとの調査
+  - Dominatorsで参照元のルートを辿れる
+  - shotest pathでインスタンスごとにどこで参照されているかを辿れる
+
+## GCの仕様
+- https://www.w3resource.com/java-tutorial/garbage-collection-in-java.php
+
+## 疑問
+- なぜ常に配列のものがある？
+  - byte[], char[]
+  - -> プリミティブな型なので、単体だとサイズが変わらない
+- なぜbyte[]のルートにStringがある？
+  - Stringのインスタンスの内部で保持してる？
+- staticのHashMapに入れていた時の話
+  - なぜjdk.internal.loader.Classloader$AppClassLoaderが最終的なMerged Pathになる？
+    - staticな変数はClassというObjectがあってそこで管理されるから？
