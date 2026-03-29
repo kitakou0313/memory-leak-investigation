@@ -92,4 +92,4 @@ jcmd <pid> GC.heap_dump /tmp/heap.hprof
   - Stringのインスタンスの内部で保持してる？
 - staticのHashMapに入れていた時の話
   - なぜjdk.internal.loader.Classloader$AppClassLoaderが最終的なMerged Pathになる？
-    - staticな変数はClassというObjectがあってそこで管理されるから？
+    - staticな変数はjava.lang.Classのインスタンスがクラスごとにあってそこで管理されるから？
