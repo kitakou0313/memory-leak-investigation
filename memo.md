@@ -68,11 +68,15 @@ jcmd <pid> GC.heap_dump /tmp/heap.hprof
 - ヒープダンプ全体の調査
   - GC root
     - GCで参照のグラフを辿る際のrootとなるobject
+    - 種類は概ね以下
       - 実行中のstackで生きているローカル変数
-        - この時はMerged Pathが特定のクラスになる
+        - この時はMerged Pathに特定のクラスが現れる
+        - ![alt text](docs/img/merged-path-with-local-variable.png)
       - thread object
       - クラスにより参照されているstatic変数
-        - この時はMerged Pathが `jdk.internal.loader.Classloader$AppClassLoader`になる（はず）
+        - この時はMerged Pathに `jdk.internal.loader.Classloader$AppClassLoader`が現れ、static変数自体のクラスは出てこない
+        - ![alt text](docs/img/merged-path-with-static-variable.png)
+      - JNI References
     - `逆に言えばここまでしか辿れない`
       - どのメソッドで追加されているか などは特定後に調査する必要がある
   - Merged Path
@@ -83,6 +87,9 @@ jcmd <pid> GC.heap_dump /tmp/heap.hprof
 
 ## GCの仕様
 - https://www.w3resource.com/java-tutorial/garbage-collection-in-java.php
+
+## ToDo
+- Classの属性に含まれない完全なローカル変数だった時merged pathはどうなる？
 
 ## 疑問
 - なぜ常に配列のものがある？
