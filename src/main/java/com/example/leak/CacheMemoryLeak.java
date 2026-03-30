@@ -13,9 +13,9 @@ import java.util.Map;
 public class CacheMemoryLeak {
 
     // エントリが削除されることのないキャッシュ
-    private static final Map<String, byte[]> cache = new HashMap<>();
+    private final Map<String, byte[]> cache = new HashMap<>();
 
-    public static void run() throws InterruptedException {
+    public void run() throws InterruptedException {
         System.out.println("[CacheMemoryLeak] 開始 — キャッシュへの無限追加");
 
         Runtime rt = Runtime.getRuntime();
@@ -23,8 +23,8 @@ public class CacheMemoryLeak {
 
         while (true) {
             String key = "key-" + i++;
-            // 1エントリあたり 10 KB のデータを追加
-            cache.put(key, new byte[10 * 1024]);
+            // 1エントリあたり 100 KB のデータを追加
+            cache.put(key, new byte[100 * 1024]);
 
             if (i % 1000 == 0) {
                 long used = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);

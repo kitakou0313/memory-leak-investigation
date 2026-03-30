@@ -13,8 +13,9 @@ public class App {
         // どのリークを実行するか引数で選択（デフォルト: cache）
         String mode = args.length > 0 ? args[0] : "cache";
 
+        CacheMemoryLeak cacheMemoryLeak = new CacheMemoryLeak();
         switch (mode) {
-            case "cache"    -> CacheMemoryLeak.run();
+            case "cache"    -> cacheMemoryLeak.run();
             case "static"   -> StaticFieldMemoryLeak.run();
             default         -> System.out.println("usage: gradle run --args='<cache|listener|static>'");
         }
