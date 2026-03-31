@@ -55,7 +55,7 @@ $ jmap -histo:live 88951 | head -n 20
 ## ヒープダンプによる調査
 jmap, jcmdコマンドで取得
 ```
-jmap -dump:live,format=b,file=/tmp/heap.hprof <pid>
+jmap -dump:live,format=b,file=./heap-dump/heap.hprof <pid>
 
 jcmd <pid> GC.heap_dump /tmp/heap.hprof
 ```
@@ -65,25 +65,31 @@ jcmd <pid> GC.heap_dump /tmp/heap.hprof
 - https://pleiades.io/help/idea/read-the-memory-snapshot.html#productivity-tips
 
 ヒープダンプ全体+クラスごとの調査とインスタンスごとに調査できる。
-- ヒープダンプ全体の調査
+- ヒープダンプ全体+クラスごとの調査
   - GC root
     - GCで参照のグラフを辿る際のrootとなるobject
     - 種類は概ね以下
       - 実行中のstackで生きているローカル変数
         - この時はMerged Pathに特定のクラスが現れる
         - ![alt text](docs/img/merged-path-with-local-variable.png)
+        - コードの例(src/main/java/com/example/leak/CacheMemoryLeak.java)
       - thread object
       - クラスにより参照されているstatic変数
         - この時はMerged Pathに `jdk.internal.loader.Classloader$AppClassLoader`が現れ、static変数自体のクラスは出てこない
         - ![alt text](docs/img/merged-path-with-static-variable.png)
+        - コードの例(src/main/java/com/example/leak/StaticFieldMemoryLeak.java)
       - JNI References
     - `逆に言えばここまでしか辿れない`
       - どのメソッドで追加されているか などは特定後に調査する必要がある
   - Merged Path
     - そのクラスのインスタンスがどのクラスのインスタンスから参照されているか
+    - 最終的にGC rootに辿れる
 - インスタンスごとの調査
-  - Dominatorsで参照元のルートを辿れる
-  - shotest pathでインスタンスごとにどこで参照されているかを辿れる
+  - インスタンスごとにどのインスタンスで参照されているかを辿れる
+    - Dominatorsで参照元のルートを辿れる
+    - Shotest pathでGC rootへの最短の参照チェーン
+      - ![alt text](docs/img/shortest-path.png)
+      - クラス内の具体的な属性も出る
 
 ## GCの仕様
 - https://www.w3resource.com/java-tutorial/garbage-collection-in-java.php

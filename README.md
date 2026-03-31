@@ -150,7 +150,7 @@ jcmd <pid> GC.class_histogram | head -25
 
 ```bash
 # 生存オブジェクトのみをhprofバイナリ形式で出力
-jmap -dump:live,format=b,file=/tmp/heap.hprof <pid>
+jmap -dump:live,format=b,file=./heap-dump/heap.hprof <pid>
 
 # jcmd経由でも取得可能（OOM時も含め確実に取得できる）
 jcmd <pid> GC.heap_dump /tmp/heap.hprof

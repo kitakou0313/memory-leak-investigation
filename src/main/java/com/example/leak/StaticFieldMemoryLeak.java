@@ -14,19 +14,7 @@ import java.util.List;
 public class StaticFieldMemoryLeak {
 
     // static リストは GC のルートとなり中身が解放されない
-    private static final List<LargeObject> REGISTRY = new ArrayList<>();
-
-    static class LargeObject {
-        private final byte[] data;
-        private final int id;
-
-        LargeObject(int id, int sizeKb) {
-            this.id = id;
-            this.data = new byte[sizeKb * 1024];
-        }
-
-        int getId() { return id; }
-    }
+    private static final List<byte[]> REGISTRY = new ArrayList<>();
 
     public static void run() throws InterruptedException {
         System.out.println("[StaticFieldMemoryLeak] 開始 — static フィールドへの無限蓄積");
@@ -35,10 +23,11 @@ public class StaticFieldMemoryLeak {
         int i = 0;
 
         while (true) {
-            // 1オブジェクトあたり 20 KB を static リストへ追加
-            REGISTRY.add(new LargeObject(i++, 20));
+            i++;
+            // 1オブジェクトあたり 100 KB を static リストへ追加
+            REGISTRY.add(new byte[100 * 1024]);
 
-            if (i % 500 == 0) {
+            if (i % 1000 == 0) {
                 long used = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
                 System.out.printf("登録数: %,d  使用ヒープ: %d MB%n", REGISTRY.size(), used);
             }

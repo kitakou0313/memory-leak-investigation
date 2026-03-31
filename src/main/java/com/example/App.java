@@ -17,7 +17,7 @@ public class App {
         switch (mode) {
             case "cache"    -> cacheMemoryLeak.run();
             case "static"   -> StaticFieldMemoryLeak.run();
-            default         -> System.out.println("usage: gradle run --args='<cache|listener|static>'");
+            default         -> System.out.println("usage: gradle run --args='<cache|static>'");
         }
     }
 
